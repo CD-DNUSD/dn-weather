@@ -6,182 +6,195 @@
 <title>Crescent City Weather</title>
 
 <style>
-  :root{
-    --blue:#3855d3;
-    --bg:#050A14;
-    --text:#ffffff;
-    --muted:rgba(255,255,255,0.84);
-    --card:rgba(255,255,255,0.08);
-    --border:rgba(255,255,255,0.16);
-    --yellow:#ffc42e;
-    --cyan:#22d3ee;
-    --snow:#67e8f9;
-    --danger:#ffb020;
-  }
+:root{
+  --blue:#3855d3;
+  --bg:#050A14;
+  --text:#ffffff;
+  --muted:rgba(255,255,255,0.84);
+  --card:rgba(255,255,255,0.08);
+  --border:rgba(255,255,255,0.16);
+}
 
-  *{ box-sizing:border-box }
+*{ box-sizing:border-box; }
 
-  html,body{
-    margin:0;
-    width:1200px;
-    height:2160px;
-    overflow:hidden;
-    background:var(--bg);
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  }
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:var(--bg);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
 
-  body{
-    display:block;
-    position:relative;
-    color:var(--text);
-  }
+body{
+  color:var(--text);
+  position:relative;
+}
 
-  body::before{
-    content:"";
-    position:absolute;
-    inset:-20%;
-    background:radial-gradient(
-      circle at center,
-      rgba(56,85,211,0.24),
-      rgba(56,85,211,0.10) 42%,
-      transparent 70%
-    );
-    pointer-events:none;
-  }
+body::before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  background:radial-gradient(
+    circle at center,
+    rgba(56,85,211,0.24),
+    rgba(56,85,211,0.10) 42%,
+    transparent 70%
+  );
+  pointer-events:none;
+}
 
-  main{
-    position:relative;
-    width:100%;
-    height:100%;
-    padding:90px 82px 170px;
-    display:flex;
-    flex-direction:column;
-    justify-content:flex-start;
-    gap:40px;
-  }
+.scale-wrap{
+  width:1200px;
+  height:2160px;
+  transform:scale(1.65);
+  transform-origin:top left;
+}
 
-  .header{
-    text-align:center;
-  }
+main{
+  position:relative;
+  width:100%;
+  height:100%;
+  padding:90px 82px 170px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  gap:40px;
+}
 
-  .location{
-    font-size:58px;
-    font-weight:900;
-    letter-spacing:0.04em;
-    text-transform:uppercase;
-  }
+.header{
+  text-align:center;
+}
 
-  .sub{
-    margin-top:18px;
-    font-size:34px;
-    font-weight:700;
-    color:var(--muted);
-  }
+.location{
+  font-size:58px;
+  font-weight:900;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+}
 
-  .current{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-    text-align:center;
-    gap:28px;
-    flex:1;
-  }
+.sub{
+  margin-top:18px;
+  font-size:34px;
+  font-weight:700;
+  color:var(--muted);
+}
 
-  .weather-icon{
-    width:420px;
-    height:420px;
-    display:grid;
-    place-items:center;
-    overflow:visible;
-    margin-top:40px;
-    filter:drop-shadow(0 24px 45px rgba(0,0,0,0.65));
-  }
+.current{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  text-align:center;
+  gap:28px;
+  flex:1;
+}
 
-  .weather-icon svg{
-    width:100%;
-    height:100%;
-    overflow:visible;
-  }
+.weather-icon{
+  width:420px;
+  height:420px;
+  display:grid;
+  place-items:center;
+  overflow:visible;
+  margin-top:40px;
+}
 
-  .temp{
-    font-size:280px;
-    font-weight:950;
-    line-height:0.88;
-    letter-spacing:-0.06em;
-    text-shadow:
-      0 14px 38px rgba(0,0,0,0.70),
-      0 0 22px rgba(56,85,211,0.38);
-  }
+.weather-icon svg{
+  width:100%;
+  height:100%;
+}
 
-  .condition{
-    max-width:1000px;
-    font-size:74px;
-    font-weight:900;
-    line-height:1.08;
-    color:var(--text);
-  }
+.temp{
+  font-size:280px;
+  font-weight:950;
+  line-height:0.88;
+}
 
-  .details{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:26px;
-    margin-top:auto;
-  }
+.condition{
+  font-size:74px;
+  font-weight:900;
+}
 
-  .card{
-    min-height:170px;
-    padding:28px 40px;
-    border-radius:34px;
-    background:var(--card);
-    border:1px solid var(--border);
-    box-shadow:0 18px 45px rgba(0,0,0,0.34);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:32px;
-  }
+.details{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:26px;
+  margin-top:auto;
+}
 
-  .label{
-    font-size:34px;
-    font-weight:800;
-    color:var(--muted);
-    text-transform:uppercase;
-    letter-spacing:0.08em;
-  }
+.card{
+  min-height:170px;
+  padding:28px 40px;
+  border-radius:34px;
+  background:var(--card);
+  border:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
 
-  .value{
-    font-size:56px;
-    font-weight:950;
-    color:var(--text);
-    text-align:right;
-  }
+.label{
+  font-size:34px;
+  font-weight:800;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+
+.value{
+  font-size:56px;
+  font-weight:950;
+}
 </style>
 </head>
+
 <body>
+<div class="scale-wrap">
 <main>
+
 <section class="header">
-<div class="location">CRESCENT CITY</div>
-<div class="sub">Current Weather</div>
+  <div class="location">CRESCENT CITY</div>
+  <div class="sub">Current Weather</div>
 </section>
 
 <section class="current">
-<div class="weather-icon">
-<svg viewBox="-35 -35 590 590">
-<path d="M130 260h260c57 0 104-46 104-103 0-56-44-101-100-103-20-58-75-98-139-98-74 0-136 52-151 122-52 9-91 55-91 109 0 33 15 63 38 83 22-7 48-10 79-10z"
-fill="none" stroke="rgba(255,255,255,.92)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-</div>
-<div class="temp">55°</div>
-<div class="condition">Cloudy</div>
+  <div class="weather-icon">
+    <svg viewBox="-35 -35 590 590">
+      <path d="M130 260h260c57 0 104-46 104-103 0-56-44-101-100-103-20-58-75-98-139-98-74 0-136 52-151 122-52 9-91 55-91 109 0 33 15 63 38 83 22-7 48-10 79-10z"
+      fill="none"
+      stroke="rgba(255,255,255,.92)"
+      stroke-width="18"
+      stroke-linecap="round"
+      stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <div class="temp">55°</div>
+  <div class="condition">Cloudy</div>
 </section>
 
 <section class="details">
-<div class="card"><div class="label">High / Low</div><div class="value">60° / 48°</div></div>
-<div class="card"><div class="label">Wind</div><div class="value">NNW 6 MPH</div></div>
-<div class="card"><div class="label">Rain Chance</div><div class="value">0%</div></div>
-<div class="card"><div class="label">Humidity</div><div class="value">76%</div></div>
+  <div class="card">
+    <div class="label">High / Low</div>
+    <div class="value">60° / 48°</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Wind</div>
+    <div class="value">NNW 6 MPH</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Rain Chance</div>
+    <div class="value">0%</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Humidity</div>
+    <div class="value">76%</div>
+  </div>
 </section>
+
 </main>
+</div>
 </body>
 </html>
