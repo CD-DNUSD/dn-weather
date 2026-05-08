@@ -88,6 +88,7 @@ main{
   text-align:center;
   gap:28px;
   flex:1;
+  overflow:visible;
 }
 
 .weather-icon{
@@ -96,12 +97,14 @@ main{
   display:grid;
   place-items:center;
   overflow:visible;
-  margin-top:40px;
+  margin-top:90px;
+  padding:35px;
 }
 
 .weather-icon svg{
   width:100%;
   height:100%;
+  overflow:visible;
 }
 
 .temp{
@@ -158,7 +161,7 @@ main{
 
 <section class="current">
   <div class="weather-icon">
-    <svg viewBox="-35 -35 590 590">
+    <svg viewBox="-80 -80 680 680" preserveAspectRatio="xMidYMid meet">
       <path d="M130 260h260c57 0 104-46 104-103 0-56-44-101-100-103-20-58-75-98-139-98-74 0-136 52-151 122-52 9-91 55-91 109 0 33 15 63 38 83 22-7 48-10 79-10z"
       fill="none"
       stroke="rgba(255,255,255,.92)"
