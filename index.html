@@ -257,7 +257,23 @@
             }
 
             const cToF      = c   => Math.round((c * 9 / 5) + 32);
+            const kphToMph  = kph => Math.round(kph * 0.621371);
             const mpsToMph  = mps => Math.round(mps * 2.23694);
+
+            // The NWS observation endpoint reports wind speed in km/h
+            // (unitCode "wmoUnit:km_h-1"). Other endpoints can report m/s
+            // or mph, so check the unit code before converting.
+            function windValueToMph(windSpeed) {
+                if (!windSpeed || windSpeed.value == null) return null;
+                const unit = windSpeed.unitCode || "";
+
+                if (unit.includes("km_h-1") || unit.includes("km/h")) return kphToMph(windSpeed.value);
+                if (unit.includes("m_s-1")  || unit.includes("m/s"))  return mpsToMph(windSpeed.value);
+                if (unit.includes("mi_h-1") || unit.includes("mph"))  return Math.round(windSpeed.value);
+
+                // Default to km/h since that's what NWS observations use
+                return kphToMph(windSpeed.value);
+            }
 
             function degreesToCompass(deg) {
                 if (deg == null || Number.isNaN(deg)) return "";
@@ -448,13 +464,12 @@
                         : "--° / --°";
 
                     // ----- Wind -----
-                    const windMps     = observation.windSpeed?.value;
-                    const windDirDeg  = observation.windDirection?.value;
+                    const windMph    = windValueToMph(observation.windSpeed);
+                    const windDirDeg = observation.windDirection?.value;
 
-                    if (windMps !== null && windMps !== undefined) {
-                        const mph = mpsToMph(windMps);
+                    if (windMph !== null) {
                         const dir = degreesToCompass(windDirDeg);
-                        windEl.textContent = dir ? `${dir} ${mph} MPH` : `${mph} MPH`;
+                        windEl.textContent = dir ? `${dir} ${windMph} MPH` : `${windMph} MPH`;
                     } else {
                         windEl.textContent = currentForecast.windSpeed
                                           || todayDay.windSpeed
