@@ -1,206 +1,513 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Crescent City Weather</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crescent City Weather</title>
+    <style>
+        :root {
+            --blue: #3855d3;
+            --bg: #050A14;
+            --text: #fff;
+            --muted: rgba(255, 255, 255, 0.84);
+            --card: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.16);
+            --yellow: #ffc42e;
+            --cyan: #22d3ee;
+            --snow: #67e8f9;
+            --danger: #ffb020;
+        }
 
-<style>
-:root{
-  --blue:#3855d3;
-  --bg:#050A14;
-  --text:#ffffff;
-  --muted:rgba(255,255,255,0.84);
-  --card:rgba(255,255,255,0.08);
-  --border:rgba(255,255,255,0.16);
-}
+        * {
+            box-sizing: border-box;
+        }
 
-*{ box-sizing:border-box; }
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        }
 
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:var(--bg);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-}
+        body {
+            position: relative;
+            color: var(--text);
+        }
 
-body{
-  color:var(--text);
-  position:relative;
-}
+        /* Soft radial glow behind the content */
+        body:before {
+            content: "";
+            position: absolute;
+            inset: -20%;
+            background: radial-gradient(
+                circle at center,
+                rgba(56, 85, 211, 0.24),
+                rgba(56, 85, 211, 0.10) 42%,
+                transparent 70%
+            );
+            pointer-events: none;
+        }
 
-body::before{
-  content:"";
-  position:absolute;
-  inset:-20%;
-  background:radial-gradient(
-    circle at center,
-    rgba(56,85,211,0.24),
-    rgba(56,85,211,0.10) 42%,
-    transparent 70%
-  );
-  pointer-events:none;
-}
+        /* The whole layout is designed at 1200x2160 then scaled up */
+        .scale-wrap {
+            width: 1200px;
+            height: 2160px;
+            transform: scale(1.65);
+            transform-origin: top left;
+        }
 
-.scale-wrap{
-  width:1200px;
-  height:2160px;
-  transform:scale(1.65);
-  transform-origin:top left;
-}
+        main {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 90px 82px 170px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 40px;
+        }
 
-main{
-  position:relative;
-  width:100%;
-  height:100%;
-  padding:90px 82px 170px;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-  gap:40px;
-}
+        /* ----- Header ----- */
+        .header {
+            text-align: center;
+        }
 
-.header{
-  text-align:center;
-}
+        .location {
+            font-size: 58px;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
 
-.location{
-  font-size:58px;
-  font-weight:900;
-  letter-spacing:0.04em;
-  text-transform:uppercase;
-}
+        .sub {
+            margin-top: 18px;
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--muted);
+        }
 
-.sub{
-  margin-top:18px;
-  font-size:34px;
-  font-weight:700;
-  color:var(--muted);
-}
+        /* ----- Current conditions block ----- */
+        .current {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: center;
+            gap: 18px;
+            flex: 1;
+            overflow: visible;
+            transform: translateY(-45px);
+        }
 
-.current{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  text-align:center;
-  gap:18px;
-  flex:1;
-  overflow:visible;
-  transform:translateY(-45px);
-}
+        .weather-icon {
+            width: 420px;
+            height: 420px;
+            display: grid;
+            place-items: center;
+            overflow: visible;
+            margin-top: 65px;
+            padding: 35px;
+            filter: drop-shadow(0 24px 45px rgba(0, 0, 0, 0.65));
+        }
 
-.weather-icon{
-  width:420px;
-  height:420px;
-  display:grid;
-  place-items:center;
-  overflow:visible;
-  margin-top:65px;
-  padding:35px;
-}
+        .weather-icon svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
 
-.weather-icon svg{
-  width:100%;
-  height:100%;
-  overflow:visible;
-}
+        .temp {
+            font-size: 280px;
+            font-weight: 950;
+            line-height: 0.88;
+            letter-spacing: -0.06em;
+            margin-top: -18px;
+            text-shadow:
+                0 14px 38px rgba(0, 0, 0, 0.70),
+                0 0 22px rgba(56, 85, 211, 0.38);
+        }
 
-.temp{
-  font-size:280px;
-  font-weight:950;
-  line-height:0.88;
-  margin-top:-18px;
-}
+        .condition {
+            max-width: 1000px;
+            font-size: 74px;
+            font-weight: 900;
+            line-height: 1.08;
+            margin-top: -8px;
+        }
 
-.condition{
-  font-size:74px;
-  font-weight:900;
-  margin-top:-8px;
-}
+        /* ----- Detail cards ----- */
+        .details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 26px;
+            margin-top: auto;
+        }
 
-.details{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:26px;
-  margin-top:auto;
-}
+        .card {
+            min-height: 170px;
+            padding: 28px 40px;
+            border-radius: 34px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+        }
 
-.card{
-  min-height:170px;
-  padding:28px 40px;
-  border-radius:34px;
-  background:var(--card);
-  border:1px solid var(--border);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
+        .label {
+            font-size: 34px;
+            font-weight: 800;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
 
-.label{
-  font-size:34px;
-  font-weight:800;
-  color:var(--muted);
-  text-transform:uppercase;
-}
+        .value {
+            font-size: 56px;
+            font-weight: 950;
+            text-align: right;
+        }
 
-.value{
-  font-size:56px;
-  font-weight:950;
-}
-</style>
+        /* Visually hidden text for screen readers */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
 </head>
-
 <body>
-<div class="scale-wrap">
-<main>
+    <div class="scale-wrap">
+        <main role="main" aria-label="Current weather for Crescent City, California">
 
-<section class="header">
-  <div class="location">CRESCENT CITY</div>
-  <div class="sub">Current Weather</div>
-</section>
+            <section class="header">
+                <div class="location">CRESCENT CITY</div>
+                <div class="sub">Current Weather</div>
+            </section>
 
-<section class="current">
-  <div class="weather-icon">
-    <svg viewBox="-80 -80 680 680" preserveAspectRatio="xMidYMid meet">
-      <path d="M130 260h260c57 0 104-46 104-103 0-56-44-101-100-103-20-58-75-98-139-98-74 0-136 52-151 122-52 9-91 55-91 109 0 33 15 63 38 83 22-7 48-10 79-10z"
-      fill="none"
-      stroke="rgba(255,255,255,.92)"
-      stroke-width="18"
-      stroke-linecap="round"
-      stroke-linejoin="round"/>
-    </svg>
-  </div>
+            <section class="current" aria-live="polite">
+                <div id="weatherIcon" class="weather-icon" aria-hidden="true"></div>
+                <div id="temp" class="temp">--°</div>
+                <div id="condition" class="condition">Loading</div>
+            </section>
 
-  <div class="temp">55°</div>
-  <div class="condition">Cloudy</div>
-</section>
+            <section class="details" aria-label="Weather details">
+                <div class="card">
+                    <div class="label">High / Low</div>
+                    <div id="highLow" class="value">--° / --°</div>
+                </div>
+                <div class="card">
+                    <div class="label">Wind</div>
+                    <div id="wind" class="value">--</div>
+                </div>
+                <div class="card">
+                    <div class="label">Rain Chance</div>
+                    <div id="rain" class="value">--%</div>
+                </div>
+                <div class="card">
+                    <div class="label">Humidity</div>
+                    <div id="humidity" class="value">--%</div>
+                </div>
+            </section>
 
-<section class="details">
-  <div class="card">
-    <div class="label">High / Low</div>
-    <div class="value">60° / 48°</div>
-  </div>
+            <div id="status" class="sr-only" aria-live="polite">Weather loading</div>
 
-  <div class="card">
-    <div class="label">Wind</div>
-    <div class="value">NNW 6 MPH</div>
-  </div>
+        </main>
+    </div>
 
-  <div class="card">
-    <div class="label">Rain Chance</div>
-    <div class="value">0%</div>
-  </div>
+    <script>
+        (() => {
+            // ---------- Configuration ----------
+            const POINTS_URL  = "https://api.weather.gov/points/41.7558,-124.2026";
+            const STATION_ID  = "KCEC";
+            const OBS_URL     = `https://api.weather.gov/stations/${STATION_ID}/observations/latest`;
+            const REFRESH_MS  = 5 * 60 * 1000; // 5 minutes
 
-  <div class="card">
-    <div class="label">Humidity</div>
-    <div class="value">76%</div>
-  </div>
-</section>
+            // ---------- DOM references ----------
+            const iconEl      = document.getElementById("weatherIcon");
+            const tempEl      = document.getElementById("temp");
+            const conditionEl = document.getElementById("condition");
+            const highLowEl   = document.getElementById("highLow");
+            const windEl      = document.getElementById("wind");
+            const rainEl      = document.getElementById("rain");
+            const humidityEl  = document.getElementById("humidity");
+            const statusEl    = document.getElementById("status");
 
-</main>
-</div>
+            // ---------- Helpers ----------
+            async function fetchJson(url) {
+                const response = await fetch(url, {
+                    cache: "no-store",
+                    headers: { "Accept": "application/geo+json, application/json" }
+                });
+                if (!response.ok) {
+                    throw new Error("Request failed: " + url);
+                }
+                return await response.json();
+            }
+
+            const cToF      = c   => Math.round((c * 9 / 5) + 32);
+            const kphToMph  = kph => Math.round(kph * 0.621371);
+            const mpsToMph  = mps => Math.round(mps * 2.23694);
+
+            // The NWS observation endpoint reports wind speed in km/h
+            // (unitCode "wmoUnit:km_h-1"). Other endpoints can report m/s
+            // or mph, so check the unit code before converting.
+            function windValueToMph(windSpeed) {
+                if (!windSpeed || windSpeed.value == null) return null;
+                const unit = windSpeed.unitCode || "";
+
+                if (unit.includes("km_h-1") || unit.includes("km/h")) return kphToMph(windSpeed.value);
+                if (unit.includes("m_s-1")  || unit.includes("m/s"))  return mpsToMph(windSpeed.value);
+                if (unit.includes("mi_h-1") || unit.includes("mph"))  return Math.round(windSpeed.value);
+
+                // Default to km/h since that's what NWS observations use
+                return kphToMph(windSpeed.value);
+            }
+
+            function degreesToCompass(deg) {
+                if (deg == null || Number.isNaN(deg)) return "";
+                const directions = [
+                    "N", "NNE", "NE", "ENE",
+                    "E", "ESE", "SE", "SSE",
+                    "S", "SSW", "SW", "WSW",
+                    "W", "WNW", "NW", "NNW"
+                ];
+                return directions[Math.round(deg / 22.5) % 16];
+            }
+
+            // ---------- SVG icon factory ----------
+            function iconSvg(type) {
+                // Reused cloud shape for any cloudy/precip variant
+                const cloud = `
+                    <path d="M130 260h260c57 0 104-46 104-103 0-56-44-101-100-103
+                             -20-58-75-98-139-98-74 0-136 52-151 122-52 9-91 55-91 109
+                             0 33 15 63 38 83 22-7 48-10 79-10z"
+                          fill="none"
+                          stroke="rgba(255,255,255,.92)"
+                          stroke-width="18"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"/>
+                `;
+
+                if (type === "sunny") {
+                    return `
+                        <svg viewBox="-80 -80 680 680" preserveAspectRatio="xMidYMid meet">
+                            <circle cx="260" cy="260" r="86"
+                                    fill="none" stroke="var(--yellow)" stroke-width="20"/>
+                            <g stroke="var(--yellow)" stroke-width="18" stroke-linecap="round">
+                                <path d="M260 52v60M260 408v60M52 260h60M408 260h60"/>
+                                <path d="M113 113l43 43M364 364l43 43M407 113l-43 43M156 364l-43 43"/>
+                            </g>
+                        </svg>
+                    `;
+                }
+
+                if (type === "partly") {
+                    return `
+                        <svg viewBox="-80 -80 680 680" preserveAspectRatio="xMidYMid meet">
+                            <circle cx="206" cy="170" r="70"
+                                    fill="none" stroke="var(--yellow)" stroke-width="18"/>
+                            <g stroke="var(--yellow)" stroke-width="14" stroke-linecap="round">
+                                <path d="M206 54v42M206 244v42M90 170h42M280 170h42"/>
+                                <path d="M124 88l30 30M258 222l30 30M288 88l-30 30M154 222l-30 30"/>
+                            </g>
+                            ${cloud}
+                        </svg>
+                    `;
+                }
+
+                if (type === "rain") {
+                    return `
+                        <svg viewBox="-80 -80 680 680" preserveAspectRatio="xMidYMid meet">
+                            ${cloud}
+                            <g stroke="var(--cyan)" stroke-width="18" stroke-linecap="round">
+                                <path d="M180 330l-34 72M260 330l-34 72M340 330l-34 72"/>
+                            </g>
+                        </svg>
+                    `;
+                }
+
+                if (type === "storm") {
+                    return `
+                        <svg viewBox="-80 -80 680 680" preserveAspectRatio="xMidYMid meet">
+                            ${cloud}
+                            <path d="M265 315l-45 95h62l-27 82 92-120h-66l42-57z"
+                                  fill="var(--danger)"/>
+                        </svg>
+                    `;
+                }
+
+                if (type === "snow") {
+                    return `
+                        <svg viewBox="-80 -80 680 680" preserveAspectRatio="xMidYMid meet">
+                            ${cloud}
+                            <g stroke="var(--snow)" stroke-width="16" stroke-linecap="round">
+                                <path d="M180 370h70M215 335v70M190 345l50 50M240 345l-50 50"/>
+                                <path d="M300 390h70M335 355v70M310 365l50 50M360 365l-50 50"/>
+                            </g>
+                        </svg>
+                    `;
+                }
+
+                if (type === "fog") {
+                    return `
+                        <svg viewBox="-80 -80 680 680" preserveAspectRatio="xMidYMid meet">
+                            ${cloud}
+                            <g stroke="rgba(255,255,255,.72)" stroke-width="16" stroke-linecap="round">
+                                <path d="M100 350h320M70 400h380M120 450h280"/>
+                            </g>
+                        </svg>
+                    `;
+                }
+
+                if (type === "wind") {
+                    return `
+                        <svg viewBox="-80 -80 680 680" preserveAspectRatio="xMidYMid meet">
+                            <g fill="none"
+                               stroke="rgba(255,255,255,.92)"
+                               stroke-width="20"
+                               stroke-linecap="round">
+                                <path d="M80 170h260c44 0 44-66 0-66-24 0-36 16-39 32"/>
+                                <path d="M80 250h330c52 0 52-78 0-78-28 0-42 18-46 38"/>
+                                <path d="M80 330h230c44 0 44 66 0 66-24 0-36-16-39-32"/>
+                            </g>
+                        </svg>
+                    `;
+                }
+
+                // Fallback: plain cloudy
+                return `
+                    <svg viewBox="-80 -80 680 680" preserveAspectRatio="xMidYMid meet">
+                        ${cloud}
+                    </svg>
+                `;
+            }
+
+            // Map a free-text condition string to one of our icon keys
+            function getIconType(text) {
+                const c = (text || "").toLowerCase();
+
+                if (c.includes("thunder") || c.includes("storm"))                       return "storm";
+                if (c.includes("snow")    || c.includes("sleet")  || c.includes("ice")) return "snow";
+                if (c.includes("rain")    || c.includes("drizzle")|| c.includes("shower")) return "rain";
+                if (c.includes("fog")     || c.includes("mist")   || c.includes("haze") || c.includes("smoke")) return "fog";
+                if (c.includes("wind"))                                                 return "wind";
+                if (c.includes("overcast")|| c.includes("cloudy"))                      return "cloudy";
+                if (c.includes("partly")  || c.includes("mostly sunny") || c.includes("partly sunny")) return "partly";
+                if (c.includes("clear")   || c.includes("sunny"))                       return "sunny";
+
+                return "cloudy";
+            }
+
+            // Tweak how a condition is presented to the user
+            const displayCondition = text => {
+                if (!text) return "Weather unavailable";
+                return text.toLowerCase() === "overcast" ? "Cloudy" : text;
+            };
+
+            const getRainChance = period => period?.probabilityOfPrecipitation?.value ?? 0;
+
+            // ---------- Main load routine ----------
+            async function loadWeather() {
+                try {
+                    // Step 1: get the grid point info, which gives us forecast URLs
+                    const pointData = await fetchJson(POINTS_URL);
+
+                    // Step 2: in parallel, pull the 7-day forecast, hourly forecast,
+                    // and the latest observation from our local station
+                    const [forecastData, hourlyData, obsData] = await Promise.all([
+                        fetchJson(pointData.properties.forecast),
+                        fetchJson(pointData.properties.forecastHourly),
+                        fetchJson(OBS_URL)
+                    ]);
+
+                    const currentForecast = hourlyData.properties.periods[0];
+                    const observation     = obsData.properties;
+                    const forecastPeriods = forecastData.properties.periods;
+
+                    const todayDay = forecastPeriods.find(p => p.isDaytime)  || forecastPeriods[0];
+                    const tonight  = forecastPeriods.find(p => !p.isDaytime) || forecastPeriods[1];
+
+                    // ----- Temperature -----
+                    // Prefer the observed temperature; fall back to the hourly forecast
+                    const observedTempC = observation.temperature?.value;
+                    const currentTemp = (observedTempC !== null && observedTempC !== undefined)
+                        ? cToF(observedTempC)
+                        : Math.round(currentForecast.temperature);
+
+                    // ----- Condition text -----
+                    const rawCondition   = observation.textDescription
+                                        || currentForecast.shortForecast
+                                        || "Weather unavailable";
+                    const shownCondition = displayCondition(rawCondition);
+
+                    tempEl.textContent      = `${currentTemp}°`;
+                    conditionEl.textContent = shownCondition;
+                    iconEl.innerHTML        = iconSvg(getIconType(rawCondition));
+
+                    // ----- High / Low -----
+                    const high = todayDay?.temperature;
+                    const low  = tonight?.temperature;
+                    highLowEl.textContent = (high !== undefined && low !== undefined)
+                        ? `${high}° / ${low}°`
+                        : "--° / --°";
+
+                    // ----- Wind -----
+                    const windMph    = windValueToMph(observation.windSpeed);
+                    const windDirDeg = observation.windDirection?.value;
+
+                    if (windMph !== null) {
+                        const dir = degreesToCompass(windDirDeg);
+                        windEl.textContent = dir ? `${dir} ${windMph} MPH` : `${windMph} MPH`;
+                    } else {
+                        windEl.textContent = currentForecast.windSpeed
+                                          || todayDay.windSpeed
+                                          || "--";
+                    }
+
+                    // ----- Rain chance -----
+                    rainEl.textContent =
+                        `${getRainChance(currentForecast) || getRainChance(todayDay)}%`;
+
+                    // ----- Humidity -----
+                    const humidity = observation.relativeHumidity?.value;
+                    humidityEl.textContent = (humidity !== null && humidity !== undefined)
+                        ? `${Math.floor(humidity)}%`
+                        : "--%";
+
+                    // ----- Screen-reader status -----
+                    statusEl.textContent =
+                        `Current weather in Crescent City from station ${STATION_ID}: ` +
+                        `${currentTemp} degrees and ${shownCondition}`;
+
+                } catch (e) {
+                    console.error(e);
+                    iconEl.innerHTML        = iconSvg("cloudy");
+                    tempEl.textContent      = "--°";
+                    conditionEl.textContent = "Weather unavailable";
+                    highLowEl.textContent   = "--° / --°";
+                    windEl.textContent      = "--";
+                    rainEl.textContent      = "--%";
+                    humidityEl.textContent  = "--%";
+                    statusEl.textContent    = "Weather unavailable";
+                }
+            }
+
+            // Kick things off and refresh every 5 minutes
+            loadWeather();
+            setInterval(loadWeather, REFRESH_MS);
+        })();
+    </script>
 </body>
 </html>
