@@ -232,7 +232,7 @@
             const POINTS_URL  = "https://api.weather.gov/points/41.7558,-124.2026";
             const STATION_ID  = "KCEC";
             const OBS_URL     = `https://api.weather.gov/stations/${STATION_ID}/observations/latest`;
-            const REFRESH_MS  = 5 * 60 * 1000; // 5 minutes
+            const REFRESH_MS  = 60 * 1000; // 5 minutes
 
             // ---------- DOM references ----------
             const iconEl      = document.getElementById("weatherIcon");
@@ -504,7 +504,7 @@
                 }
             }
 
-            // Kick things off and refresh every 5 minutes
+            // Kick things off and refresh every 1 minutes
             loadWeather();
             setInterval(loadWeather, REFRESH_MS);
         })();
